@@ -48,7 +48,7 @@ const {promises: fsP} = fs
 
   console.log("constructing video...")
   await runCommand(`rm -rf ${finalVideo}`)
-  await runCommand(`ffmpeg -safe 0 -f concat -i ${filesTxt} -c copy ${finalVideo}`)
+  await runCommand(`ffmpeg -v error -safe 0 -f concat -i ${filesTxt} -c copy ${finalVideo}`)
   console.log(`Done! Total Time: ${(Date.now() - time) / 1000}s`)
 })();
 
@@ -232,7 +232,7 @@ function isAudioCorrectFormat(audioStream) {
 }
 
 function getDateFromDir(dirname) {
-  const dateRegex = /([0-9]{4})([0-9]{2})([0-9]{2})/
+  const dateRegex = /^([0-9]{4})([0-9]{2})([0-9]{2})$/
 
   let [_, year, month, day] = dateRegex.exec(dirname) || []
   if (!_) {
