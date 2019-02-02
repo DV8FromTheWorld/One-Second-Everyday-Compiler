@@ -1,0 +1,6 @@
+dist/
+node_modules/
+.DS_Store
+npm-debug.log
+.idea
+time_cc_My Life/
