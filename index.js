@@ -177,7 +177,7 @@ async function createSubtitledAndResizedVideo(dir, date, usePreviousOutput = tru
   }
 
   const outputFileAudioStream = await getAudioStream(output)
-  if (usePreviousOutput && fs.existsSync(output) && outputFileAudioStream && isAudioCorrectFormat(outputFileAudioStream)) {
+  if (usePreviousOutput && fs.existsSync(output) && outputFileAudioStream && isAudioCorrectFormat(outputFileAudioStream) && await isVideo30FPS(output)) {
     console.log(`Reusing output for dir: ${dir}`)
     return output
   }
@@ -201,18 +201,31 @@ async function createSubtitledAndResizedVideo(dir, date, usePreviousOutput = tru
   const inputFileAudioStream = await getAudioStream(input)
   if (inputFileAudioStream) {
     if (isAudioCorrectFormat(inputFileAudioStream)) {
-      await runCommand(`ffmpeg -i ${input} -vf "scale=1920x1080, drawtext=${drawTextArgs.join(':')}" -vcodec libx264 -vb 4000k -codec:a copy ${output}`)
+      await runCommand(`ffmpeg -i ${input} -vf "scale=1920x1080, drawtext=${drawTextArgs.join(':')}" -vcodec libx264 -r 30 -vb 4000k -codec:a copy ${output}`)
     }
     else {
       console.log("Found audio stream, but it is in wrong format. Converting.")
-      await runCommand(`ffmpeg -i ${input} -vf "scale=1920x1080, drawtext=${drawTextArgs.join(':')}" -vcodec libx264 -vb 4000k -codec:a aac -ar 48000 ${output}`)
+      await runCommand(`ffmpeg -i ${input} -vf "scale=1920x1080, drawtext=${drawTextArgs.join(':')}" -vcodec libx264 -r 30 -vb 4000k -codec:a aac -ar 48000 ${output}`)
     }
   }
   else {
-    await runCommand(`ffmpeg -f lavfi -i "anullsrc=channel_layout=stereo:sample_rate=48000" -i ${input} -vf "scale=1920x1080, drawtext=${drawTextArgs.join(':')}" -vcodec libx264 -vb 4000k -shortest -codec:a aac ${output}`)
+    await runCommand(`ffmpeg -f lavfi -i "anullsrc=channel_layout=stereo:sample_rate=48000" -i ${input} -vf "scale=1920x1080, drawtext=${drawTextArgs.join(':')}" -vcodec libx264 -r 30 -vb 4000k -shortest -codec:a aac ${output}`)
   }
 
   return output
+}
+async function isVideo30FPS(file) {
+  try {
+    const { stdout } = await runCommand(`ffprobe -i ${file} -v quiet -print_format json -show_streams -select_streams v`)
+    const videoStreams = JSON.parse(stdout).streams
+
+    const avgFrameRate = videoStreams[0].avg_frame_rate
+
+    return avgFrameRate && eval(avgFrameRate) === 30
+  }
+  catch (e) {
+    return false
+  }
 }
 
 async function getAudioStream(file) {
