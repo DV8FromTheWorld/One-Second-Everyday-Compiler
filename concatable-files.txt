@@ -1,0 +1,5 @@
+file title-clip.mp4
+file ./2019-01-01/output.mp4
+file ./2019-01-02/output.mp4
+file ./2019-01-03/output.mp4
+file end-clip.mp4

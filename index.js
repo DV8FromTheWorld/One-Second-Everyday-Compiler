@@ -1,6 +1,8 @@
 const {spawn, exec} = require('child_process')
 const fs = require('fs')
 const {promises: fsP} = fs
+const FONT_PATH = './resources/mmrtextb.ttf'
+const SHOULD_REUSE_VIDEOS = false
 
 ;(async () => {
   const time = Date.now()
@@ -29,7 +31,7 @@ const {promises: fsP} = fs
   outputFiles.push(titleVideoFile)
 
   for (const {dir, date} of dirs) {
-    const outputFile = await createSubtitledAndResizedVideo(dir, date)
+    const outputFile = await createSubtitledAndResizedVideo(dir, date, SHOULD_REUSE_VIDEOS)
     if (!outputFile) {
       continue
     }
@@ -67,7 +69,7 @@ async function createTitleVideo(dateRange, duration = 2.5, color = '#2f3136') {
 
   const titleVideo = 'title-clip.mp4'
   const logoFile   = `${__dirname}/resources/logo-with-text.png`
-
+  
   const lavfiArgs = [
     `color=c=${color}`,
     `s=1920x1080`,
@@ -77,7 +79,7 @@ async function createTitleVideo(dateRange, duration = 2.5, color = '#2f3136') {
 
   const drawTextArgs = [
     `text='${dateRange}'`,
-    `fontfile=/Windows/Fonts/mmrtextb.ttf`,
+    `fontfile=${FONT_PATH}`,
     `fontsize=70`,
     `fontcolor=white`,
     `shadowcolor=DarkSlateGray`,
@@ -123,7 +125,7 @@ async function createEndingVideo(duration = 4.0, color = '#2f3136') {
 
   //Defaults
   const drawTextArgs = [
-    `fontfile=/Windows/Fonts/mmrtextb.ttf`,
+    `fontfile=${FONT_PATH}`,
     `fontsize=45`,
     `fontcolor=white`,
     `shadowcolor=DarkSlateGray`,
@@ -183,7 +185,7 @@ async function createSubtitledAndResizedVideo(dir, date, usePreviousOutput = tru
   }
 
   const drawTextArgs = [
-    `fontfile=/Windows/Fonts/mmrtextb.ttf`,
+    `fontfile=${FONT_PATH}`,
     `text='${date}'`,
     `fontsize=50`,
     `fontcolor=white`,
@@ -232,7 +234,6 @@ async function getAudioStream(file) {
   try {
     const { stdout } = await runCommand(`ffprobe -i ${file} -v quiet -print_format json -show_streams -select_streams a`)
     const audioStreams = JSON.parse(stdout).streams
-
     return audioStreams[0]
   }
   catch (e) {
@@ -245,15 +246,19 @@ function isAudioCorrectFormat(audioStream) {
 }
 
 function getDateFromDir(dirname) {
-  const dateRegex = /^([0-9]{4})([0-9]{2})([0-9]{2})$/
+  // const dateRegex = /^([0-9]{4})([0-9]{2})([0-9]{2})$/
 
-  let [_, year, month, day] = dateRegex.exec(dirname) || []
-  if (!_) {
+  // let [_, year, month, day] = dateRegex.exec(dirname) || []
+  // if (!_) {
+  //   return
+  // }
+  let [year, month, day] = dirname.split("-")
+  //Month is a string of `MM`. Convert to number for array index lookup.
+  month = +month - 1
+  
+  if (!day || isNaN(month)) {
     return
   }
-
-  //Month is a string of `MM`. Convert to number for array index lookup.
-  month = +month
 
   const months = [
     'Jan',
