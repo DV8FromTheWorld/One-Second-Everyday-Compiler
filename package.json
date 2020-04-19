@@ -1,0 +1,28 @@
+{
+  "name": "one-second-everyday-compiler",
+  "version": "0.0.1",
+  "description": "Takes a directory of date-named folders and creates a compiled video of all of the clips into a single date-stamped video.",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "ose": "bin/index.js",
+    "one-second": "bin/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DV8FromTheWorld/One-Second-Everyday-Creator.git"
+  },
+  "keywords": [
+    "video",
+    "ffmpeg",
+    "editor"
+  ],
+  "author": "Austin Keener <austin.keener@inmar.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/DV8FromTheWorld/One-Second-Everyday-Compiler/issues"
+  },
+  "homepage": "https://github.com/DV8FromTheWorld/One-Second-Everyday-Compiler#readme"
+}

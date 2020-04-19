@@ -9,7 +9,7 @@ const BlankAudioFilter = require('./ffmpeg/filters/BlankAudioFilter')
 const SHOULD_REUSE_VIDEOS = false
 const BLANK_AUDIO_LAVFI_FILTER = new BlankAudioFilter()
 
-;(async () => {
+module.exports = async function runCompilation() {
   const time = Date.now()
 
   //Look for directories in the current working directory.
@@ -58,7 +58,7 @@ const BLANK_AUDIO_LAVFI_FILTER = new BlankAudioFilter()
   await fsPromises.unlink(finalVideo)
   await runCommand(`ffmpeg -v error -safe 0 -f concat -i ${filesTxt} -c copy ${finalVideo}`)
   console.log(`Done! Total Time: ${(Date.now() - time) / 1000}s`)
-})();
+}
 
 /**
  * Creates a title video with the provided date range as a subtitle.
