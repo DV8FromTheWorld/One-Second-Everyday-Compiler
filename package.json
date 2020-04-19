@@ -7,7 +7,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "bin": {
+    "1se": "bin/index.js",
     "ose": "bin/index.js",
+    "1-second": "bin/index.js",
     "one-second": "bin/index.js"
   },
   "repository": {

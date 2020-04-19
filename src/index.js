@@ -1,4 +1,5 @@
 const fs         = require('fs')
+const path       = require('path')
 const { exec }   = require('child_process')
 const fsPromises = fs.promises
 
@@ -22,6 +23,11 @@ module.exports = async function runCompilation() {
     })
     .map(dir => ({dir, date: getDateFromDir(dir)}))
     .filter(dirInfo => dirInfo.date) //Filter out any directories that are not date directories.
+
+  if (!dirs.length) {
+    console.log(`Failed to find any date-stamped directories in current directory ('${path.resolve('.')}')`)
+    return
+  }
 
   const outputFiles = []
   const filesTxt = 'concatable-files.txt'
