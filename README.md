@@ -2,6 +2,9 @@
 Contains scripts to put together 1 second everyday type videos with FFMPEG
 
 # Install
+**This program requires that `ffmpeg` and `ffprobe` be installed and globally available on the system.**
+<br />You can find both of this for install [here](https://www.ffmpeg.org/download.html)
+
 Pull the latest version from github
 ```
 git clone https://github.com/DV8FromTheWorld/One-Second-Everyday-Compiler.git
@@ -14,6 +17,9 @@ npm install -g .
 ```
 
 The `1se` executable will now be available globally throughout the system.
+
+**Additionally**
+If you do not already have FFMPEG and FFPROBE installed on your system, 
 
 # Usage
 Suppose you have all of your videos in a folder called `my-1se-videos`
