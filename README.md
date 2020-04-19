@@ -18,9 +18,6 @@ npm install -g .
 
 The `1se` executable will now be available globally throughout the system.
 
-**Additionally**
-If you do not already have FFMPEG and FFPROBE installed on your system, 
-
 # Usage
 Suppose you have all of your videos in a folder called `my-1se-videos`
 
