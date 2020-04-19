@@ -2,7 +2,7 @@
 Contains scripts to put together 1 second everyday type videos with FFMPEG
 
 # Install
-Pull the latest video from github
+Pull the latest version from github
 ```
 git clone https://github.com/DV8FromTheWorld/One-Second-Everyday-Compiler.git
 cd One-Second-Everyday-Compiler
