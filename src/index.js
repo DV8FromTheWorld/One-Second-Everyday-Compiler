@@ -54,14 +54,14 @@ module.exports = async function runCompilation() {
   //Add the end video as the last video in the ones we concat.
   outputFiles.push(endVideoFile)
 
-  await fsPromises.unlink(filesTxt)
+  await removeFileIfExists(filesTxt)
   await fsPromises.writeFile(filesTxt, outputFiles
     .map(file => `file ${file}`)
     .join('\n')
   )
 
   console.log("constructing video...")
-  await fsPromises.unlink(finalVideo)
+  await removeFileIfExists(finalVideo)
   await runCommand(`ffmpeg -v error -safe 0 -f concat -i ${filesTxt} -c copy ${finalVideo}`)
   console.log(`Done! Total Time: ${(Date.now() - time) / 1000}s`)
 }
@@ -109,7 +109,7 @@ async function createTitleVideo(dateRange, duration = 2.5, backgroundColor = '#2
   ]
 
   //Cleanup from possible previous runs
-  await fsPromises.unlink(titleVideo)
+  await removeFileIfExists(titleVideo)
   await runCommand(`ffmpeg`
     + ` -f lavfi -i "${solidColorLavfiFilter.compile()}"`    //Generate the background video        [stream 0]
     + ` -i ${logoFile}`                                      //Add our logo to the resource streams [stream 1]
@@ -172,7 +172,7 @@ async function createEndingVideo(duration = 4.0, backgroundColor = '#2f3136') {
     `fade=out:${totalFrames - 30}:30` //Fade out over the last 30 frames (1 full second) (start end-30, then fade for 30 frames)
   ]
 
-  await fsPromises.unlink(endVideo)
+  await removeFileIfExists(endVideo)
   await runCommand(`ffmpeg`
     + ` -f lavfi -i "${solidColorLavfiFilter.compile()}"`    //Generate the background video        [stream 0]
     + ` -i ${logoFile}`                                      //Add our logo to the resource streams [stream 1]
@@ -256,7 +256,7 @@ async function createSubtitledAndResizedVideo(dir, date, usePreviousOutput = tru
     audioManipulationArgs = `-codec:a aac`
   }
 
-  await fsPromises.unlink(output)
+  await removeFileIfExists(output)
   await runCommand(`ffmpeg`
     + ` -i ${input}`              //The original file.
     + ` ${generatedAudioSrc}`     //If we needed to generate audio, then include the filter to do that
@@ -356,6 +356,20 @@ function getDateFromDir(dirname) {
   ]
 
   return `${months[month]} ${day}, ${year}`
+}
+
+async function removeFileIfExists(filePath) {
+  try {
+    await fsPromises.unlink(filePath)
+  }
+  catch (err) {
+    //File didn't exist
+    if (err.code === 'ENOENT') {
+      return
+    }
+
+    throw err
+  }
 }
 
 async function runCommand(command) {

@@ -3,5 +3,12 @@
 const runCompliation = require("../src");
 
 ;(async () => {
-  await runCompliation()
+  try {
+    await runCompliation()
+  }
+  catch (err) {
+    console.log('\n')
+    console.error("Encountered error when attempting video compilation:")
+    console.error(err)
+  }
 })();
